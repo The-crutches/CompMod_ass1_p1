@@ -31,7 +31,39 @@ This is the data:
 Questions:
 
 1. What's Riccardo's estimated knowledge of CogSci? What is the probability he knows more than chance (0.5) [try figuring this out. if you can't peek into chapters 3.1 and 3.2 and/or the slides]?
+
+```{r}
+name <- c("Riccardo", "Kristian", "Daina", "Mikkel")
+
+correct <- c(3, 2, 160, 66)
+
+total <- c(6, 2, 198, 132)
+
+df <- cbind(name, correct, total)
+```
+
+
 - First implement a grid approximation (hint check paragraph 2.4.1!) with a uniform prior, calculate the posterior and plot the results
+```{r}
+dens <- 20
+
+
+p_grid <- seq(from = 0 , to = 1 , length.out = dens)
+
+prior <- rep( 1 , dens ) # Flat 
+
+
+
+dens(rbinom(1e4, 9, runif(1e4, 0, 1)))
+
+
+prior <- ifelse(p_grid < 0.5 , 0 , 1) # UnreasonablyOptimisticPrior
+print(prior)
+prior <- dnorm(p_grid, 0.5, 0.1) # SensiblyCenteredAtChance
+print(prior)
+
+```
+
 - Then implement a quadratic approximation (hint check paragraph 2.4.2!).
 - N.B. for the rest of the exercise just keep using the grid approximation (we'll move to quadratic approximations in two classes)
 
