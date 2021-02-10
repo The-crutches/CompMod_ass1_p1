@@ -5,16 +5,6 @@ date: "07/01/2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-library(rethinking)
-```
-
-## In this assignment we learn how to assess rates from a binomial distribution, using the case of assessing your teachers' knowledge of CogSci
-
-N.B. this markdown has 2 parts as it spans 2 weeks of teaching
-
 ### First part
 
 You want to assess your teachers' knowledge of cognitive science. "These guys are a bunch of drama(turgist) queens, mindless philosophers, chattering communication people and Russian spies. Do they really know CogSci?", you think.
@@ -35,6 +25,8 @@ Questions:
 1. What's Riccardo's estimated knowledge of CogSci? What is the probability he knows more than chance (0.5) [try figuring this out. if you can't peek into chapters 3.1 and 3.2 and/or the slides]?
 
 ```{r}
+
+library(rethinking)
 name <- c("Riccardo", "Kristian", "Daina", "Mikkel")
 
 correct <- c(3, 2, 160, 66)
@@ -47,288 +39,35 @@ df <- cbind(name, correct, total)
 
 - First implement a grid approximation (hint check paragraph 2.4.1!) with a uniform prior, calculate the posterior and plot the results
 ```{r}
-#create grid
-dens <- 1000
+dens <- 20
+
 
 p_grid <- seq(from = 0 , to = 1 , length.out = dens)
 
 prior <- rep( 1 , dens ) # Flat 
 
-#dens(rbinom(1e4, 6, runif(1e4, 0, 1)))
+
+
+dens(rbinom(1e4, 9, runif(1e4, 0, 1)))
+
+
 prior <- ifelse(p_grid < 0.5 , 0 , 1) # UnreasonablyOptimisticPrior
 print(prior)
 prior <- dnorm(p_grid, 0.5, 0.1) # SensiblyCenteredAtChance
 print(prior)
 
-
-#compute likelihood
-likelihood <- dbinom(3, size = 6, prob = p_grid)
-sum(likelihood)
-
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-
-#plot the posterior
-plot(posterior)
-df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-
-ggplot(df_stats_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
 ```
 
 - Then implement a quadratic approximation (hint check paragraph 2.4.2!).
 - N.B. for the rest of the exercise just keep using the grid approximation (we'll move to quadratic approximations in two classes)
 
-```{r}
-
-#quadratic approximation
-qa_approximation <- quap( alist(
-w ~ dbinom(6,p) , # binomial likelihood
-p ~ dunif(0,1) # uniform prior
-),
-data=list(w=3)) 
-
-precis(qa_approximation)
-
-curve(dnorm(x , 0.5, 0.2) , lty=2 , add=TRUE )
-```
-
-
 2. Estimate all the teachers' knowledge of CogSci. Who's best? Use grid approximation. Comment on the posteriors of Riccardo and Mikkel.
 2a. Produce plots of the prior, and posterior for each teacher.
-
-
-```{r}
-#for Kristian
-#compute likelihood
-likelihood <- dbinom(2, size = 2, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_K <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_K, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-#for Daina
-#compute likelihood
-likelihood <- dbinom(160, size = 198, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_D <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_D, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-
-#for Mikkel
-#compute likelihood
-likelihood <- dbinom(66, size = 132, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_M <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_M, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-```
 
 3. Change the prior. Given your teachers have all CogSci jobs, you should start with a higher appreciation of their knowledge: the prior is a normal distribution with a mean of 0.8 and a standard deviation of 0.2. Do the results change (and if so how)?
 3a. Produce plots of the prior and posterior for each teacher.
 
-```{r}
-#create grid
-prior <- dnorm(p_grid, 0.8, 0.2) # SensiblyCenteredAtAssumedCogSciKnowledge
-plot(p_grid, prior)
-
-#for Riccardo
-#compute likelihood
-likelihood <- dbinom(3, size = 6, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-#for Kristian
-#compute likelihood
-likelihood <- dbinom(2, size = 2, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_K <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_K, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-#for Daina
-#compute likelihood
-likelihood <- dbinom(160, size = 198, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_D <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_D, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-
-#for Mikkel
-#compute likelihood
-likelihood <- dbinom(66, size = 132, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_M <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_M, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-```
-
-
 4. You go back to your teachers and collect more data (multiply the previous numbers by 100). Calculate their knowledge with both a uniform prior and a normal prior with a mean of 0.8 and a standard deviation of 0.2. Do you still see a difference between the results? Why?
-
-```{r}
-#prior that is uniform
-prior_u <- rep( 1 , dens) 
-plot(p_grid, prior_u)
-
-#for Riccardo
-#compute likelihood
-likelihood <- dbinom(300, size = 600, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-#for Kristian
-#compute likelihood
-likelihood <- dbinom(200, size = 200, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_K <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_K, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-#for Daina
-#compute likelihood
-likelihood <- dbinom(16000, size = 19800, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_D <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_D, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-
-#for Mikkel
-#compute likelihood
-likelihood <- dbinom(6600, size = 13200, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_M <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_M, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-
-
-
-#prior that is mean adjusted
-prior <- dnorm(p_grid, 0.8, 0.2) # SensiblyCenteredAtAssumedCogSciKnowledge
-
-
-#for Riccardo
-#compute likelihood
-likelihood <- dbinom(300, size = 600, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-#for Kristian
-#compute likelihood
-likelihood <- dbinom(200, size = 200, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_K <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_K, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-#for Daina
-#compute likelihood
-likelihood <- dbinom(16000, size = 19800, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_D <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_D, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-
-
-#for Mikkel
-#compute likelihood
-likelihood <- dbinom(6600, size = 13200, prob = p_grid)
-
-#calculate posterior
-unstd.posterior <- likelihood * prior
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-#plot the posterior
-df_stats_M <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
-ggplot(df_stats_M, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
-```
-
 
 5. Imagine you're a skeptic and think your teachers do not know anything about CogSci, given the content of their classes. How would you operationalize that belief?
 
