@@ -54,16 +54,9 @@ p_grid <- seq(from = 0 , to = 1 , length.out = dens)
 
 prior <- rep( 1 , dens ) # Flat 
 
-#dens(rbinom(1e4, 6, runif(1e4, 0, 1)))
-prior <- ifelse(p_grid < 0.5 , 0 , 1) # UnreasonablyOptimisticPrior
-print(prior)
-prior <- dnorm(p_grid, 0.5, 0.1) # SensiblyCenteredAtChance
-print(prior)
-
 
 #compute likelihood
 likelihood <- dbinom(3, size = 6, prob = p_grid)
-sum(likelihood)
 
 
 #calculate posterior
@@ -71,8 +64,9 @@ unstd.posterior <- likelihood * prior
 posterior <- unstd.posterior / sum(unstd.posterior)
 
 
+
+
 #plot the posterior
-plot(posterior)
 df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
 
 
@@ -115,6 +109,9 @@ df_stats_K <- data.frame(grid = p_grid, posterior = posterior, prior = prior, li
 
 ggplot(df_stats_K, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
 
+p_grid[ which.max(posterior) ]
+
+
 #for Daina
 #compute likelihood
 likelihood <- dbinom(160, size = 198, prob = p_grid)
@@ -129,6 +126,9 @@ df_stats_D <- data.frame(grid = p_grid, posterior = posterior, prior = prior, li
 ggplot(df_stats_D, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
 
 
+p_grid[ which.max(posterior) ]
+
+
 #for Mikkel
 #compute likelihood
 likelihood <- dbinom(66, size = 132, prob = p_grid)
@@ -141,6 +141,9 @@ posterior <- unstd.posterior / sum(unstd.posterior)
 df_stats_M <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
 
 ggplot(df_stats_M, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
+
+precis(df_stats_M)
+precis(df_stats_R)
 
 ```
 
@@ -331,6 +334,34 @@ ggplot(df_stats_M, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(a
 
 
 5. Imagine you're a skeptic and think your teachers do not know anything about CogSci, given the content of their classes. How would you operationalize that belief?
+
+```{r}
+
+
+
+# Now we expect that the teachers will perform below chance. We use Riccardo as an example 
+prior <- ifelse(p_grid > 0.5 , 0 , 1) # UnreasonablyOptimisticPrior
+print(prior)
+
+#for Riccardo
+#compute likelihood
+likelihood <- dbinom(3, size = 6, prob = p_grid)
+
+#calculate posterior
+unstd.posterior <- likelihood * prior
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+
+#plot the posterior
+plot(posterior)
+df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
+
+
+ggplot(df_stats_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
+
+
+```
+
 
 6. Optional question: Can you estimate the difference between Riccardo's estimated knowledge and that of each of the other teachers? Would you deem it credible (that is, would you believe that it is actually different)? 
 
