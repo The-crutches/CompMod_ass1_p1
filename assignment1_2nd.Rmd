@@ -381,6 +381,48 @@ This is the old data:
 
 This is the new data:
 - Riccardo: 9 correct answers out of 10 questions (then he freaks out about teaching preparation and leaves)
+```{r}
+
+#create grid
+prior <- dnorm(p_grid, 0.8, 0.2) # SensiblyCenteredAtAssumedCogSciKnowledge
+
+#for Riccardo - old results
+#compute likelihood
+likelihood <- dbinom(3, size = 6, prob = p_grid)
+
+#calculate posterior
+unstd.posterior <- likelihood * prior
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+#Old posterior posterior
+df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
+
+# New results
+n_success <- 9
+n_trials  <- 10
+
+# New posterior
+new_R <-
+  df_stats_R %>% 
+  mutate(prior = posterior, 
+         likelihood = dbinom(n_success, size = n_trials, prob = p_grid)) %>% 
+         mutate(posterior = (likelihood * prior) / sum(likelihood*prior))
+
+n_samples <- 1e3
+
+new_samples_post <- new_R %>% 
+  slice_sample(n = n_samples, weight_by = posterior, replace = T)
+
+new_samples_prior <- new_R %>% 
+  slice_sample(n = n_samples, weight_by = prior, replace = T)
+
+precis(new_samples_post)
+precis(new_samples_prior)
+precis(new_R)
+
+ggplot(new_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/sum(prior)),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
+```
+
 - Kristian: 8 correct answers out of 12 questions
 - Daina: 148 correct answers out of 172 questions (again, Daina never gets bored)
 - Mikkel: 34 correct answers out of 65 questions
