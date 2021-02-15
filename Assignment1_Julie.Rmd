@@ -125,6 +125,19 @@ new_samples_post <- new_R %>%
 new_samples_prior <- new_R %>% 
   slice_sample(n = n_samples, weight_by = prior, replace = T)
 
+
+n_samples <- 1e3
+
+new_samples_post <- new_R %>% 
+  slice_sample(n = n_samples, weight_by = posterior, replace = T)
+
+new_samples_prior <- new_R %>% 
+  slice_sample(n = n_samples, weight_by = prior, replace = T)
+
+precis(new_samples_post)
+precis(new_samples_prior)
+precis(new_R)
+
 ```
 
 
