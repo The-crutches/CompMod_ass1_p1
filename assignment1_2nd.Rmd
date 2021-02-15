@@ -408,24 +408,98 @@ new_R <-
          likelihood = dbinom(n_success, size = n_trials, prob = p_grid)) %>% 
          mutate(posterior = (likelihood * prior) / sum(likelihood*prior))
 
-n_samples <- 1e3
-
-new_samples_post <- new_R %>% 
-  slice_sample(n = n_samples, weight_by = posterior, replace = T)
-
-new_samples_prior <- new_R %>% 
-  slice_sample(n = n_samples, weight_by = prior, replace = T)
-
-precis(new_samples_post)
-precis(new_samples_prior)
-precis(new_R)
 
 ggplot(new_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/sum(prior)),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
 ```
 
 - Kristian: 8 correct answers out of 12 questions
+
+```{r}
+#Old data Kristian
+#compute likelihood
+likelihood <- dbinom(2, size = 2, prob = p_grid)
+
+#calculate posterior
+unstd.posterior <- likelihood * prior
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+#plot the posterior
+df_stats_K <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
+
+
+# New results
+n_success <- 8
+n_trials  <- 12
+
+# New posterior
+new_K <-
+  df_stats_K %>% 
+  mutate(prior = posterior, 
+         likelihood = dbinom(n_success, size = n_trials, prob = p_grid)) %>% 
+         mutate(posterior = (likelihood * prior) / sum(likelihood*prior))
+
+ggplot(new_K, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/sum(prior)),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
+
+
+```
+
+
 - Daina: 148 correct answers out of 172 questions (again, Daina never gets bored)
+```{r}
+#Old data Daina
+#compute likelihood
+likelihood <- dbinom(160, size = 198, prob = p_grid)
+
+#calculate posterior
+unstd.posterior <- likelihood * prior
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+#plot the posterior
+df_stats_D <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
+
+
+# New results
+n_success <- 148
+n_trials  <- 172
+
+# New posterior
+new_D <-
+  df_stats_D %>% 
+  mutate(prior = posterior, 
+         likelihood = dbinom(n_success, size = n_trials, prob = p_grid)) %>% 
+         mutate(posterior = (likelihood * prior) / sum(likelihood*prior))
+
+ggplot(new_D, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/sum(prior)),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
+
+```
+
+
 - Mikkel: 34 correct answers out of 65 questions
+```{r}
+#Old data Mikkel
+#compute likelihood
+likelihood <- dbinom(66, size = 132, prob = p_grid)
+
+#calculate posterior
+unstd.posterior <- likelihood * prior
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+#plot the posterior
+df_stats_M <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
+
+# New results
+n_success <- 34
+n_trials  <- 65
+
+# New posterior
+new_M <-
+  df_stats_M %>% 
+  mutate(prior = posterior, 
+         likelihood = dbinom(n_success, size = n_trials, prob = p_grid)) %>% 
+         mutate(posterior = (likelihood * prior) / sum(likelihood*prior))
+
+ggplot(new_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/sum(prior)),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability")
+```
 
 Guidance Tips
 
