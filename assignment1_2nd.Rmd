@@ -55,23 +55,20 @@ p_grid <- seq(from = 0 , to = 1 , length.out = dens)
 
 prior <- rep( 1 , dens ) # Flat 
 
-
 #compute likelihood
 likelihood <- dbinom(3, size = 6, prob = p_grid)
-
 
 #calculate posterior
 unstd.posterior <- likelihood * prior
 posterior <- unstd.posterior / sum(unstd.posterior)
-
-
-
 
 #plot the posterior
 df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
 
 
 ggplot(df_stats_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability") + ggtitle("Riccardo")
+
+p_grid[which.max(posterior)]
 
 # The probability of Riccardo knowing more than chance (0.5%)
 # creating samples
@@ -94,7 +91,6 @@ samples %>%
 - N.B. for the rest of the exercise just keep using the grid approximation (we'll move to quadratic approximations in two classes)
 
 ```{r}
-
 #quadratic approximation
 qa_approximation <- quap( alist(
 w ~ dbinom(6,p) , # binomial likelihood
@@ -184,6 +180,9 @@ posterior <- unstd.posterior / sum(unstd.posterior)
 df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
 
 ggplot(df_stats_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability") + ggtitle("Riccardo")
+
+p_grid[ which.max(posterior) ]
+
 
 #for Kristian
 #compute likelihood
@@ -299,6 +298,7 @@ ggplot(df_stats_M, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(a
 ```{r}
 # Now we expect that the teachers will perform below chance. We use Riccardo as an example 
 prior <- ifelse(p_grid > 0.5 , 0 , 1) # prior that assumes below 0.5
+prior <- dnorm(p_grid, 0.3, 0.2)
 
 #for Riccardo
 likelihood <- dbinom(3, size = 6, prob = p_grid)
