@@ -401,6 +401,10 @@ This is the new data:
 ```{r}
 
 #create grid
+dens <- 1000
+
+p_grid <- seq(from = 0 , to = 1 , length.out = dens)
+
 prior <- dnorm(p_grid, 0.8, 0.2) # SensiblyCenteredAtAssumedCogSciKnowledge
 
 #for Riccardo - old results
