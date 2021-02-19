@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(rethinking)
 library(tidyverse)
+library(Metrics)
 ```
 
 ## In this assignment we learn how to assess rates from a binomial distribution, using the case of assessing your teachers' knowledge of CogSci
@@ -64,7 +65,7 @@ posterior <- unstd.posterior / sum(unstd.posterior)
 
 #plot the posterior
 df_stats_R <- data.frame(grid = p_grid, posterior = posterior, prior = prior, likelihood = likelihood)
-
+precis(df_stats_R)
 
 ggplot(df_stats_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/dens),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability") + ggtitle("Riccardo")
 
@@ -441,6 +442,18 @@ new_M <-
          mutate(posterior = (likelihood * prior) / sum(likelihood*prior))
 
 ggplot(new_R, aes(grid,posterior)) + geom_point() +geom_line()+ geom_line(aes(grid, prior/sum(prior)),color= 'red')+ xlab("Knowledge of CogSci") + ylab("posterior probability") + ggtitle("Mikkel")
+
+```
+
+```{r}
+#finally, we want to compare our predictions (posterior) to the actual data (likelihood).
+#we do this by using RMSE
+
+rmse(new_M$likelihood, new_M$posterior)
+rmse(new_D$likelihood, new_D$posterior)
+rmse(new_R$likelihood, new_R$posterior)
+rmse(new_K$likelihood, new_K$posterior)
+
 ```
 
 Guidance Tips
