@@ -56,6 +56,8 @@ print(prior)
 prior <- dnorm(p_grid, 0.5, 0.1) # SensiblyCenteredAtChance
 print(prior)
 
+median(df_stats_D$grid)
+
 ```
 
 - Then implement a quadratic approximation (hint check paragraph 2.4.2!).
@@ -81,6 +83,7 @@ Questions to be answered (but see guidance below):
 1- Write a paragraph discussing how assessment of prediction performance is different in Bayesian vs. frequentist models
 2- Provide at least one plot and one written line discussing prediction errors for each of the teachers.
 
+
 This is the old data:
 - Riccardo: 3 correct answers out of 6 questions
 - Kristian: 2 correct answers out of 2 questions (then he gets bored)
@@ -91,6 +94,7 @@ This is the new data:
 - Riccardo: 9 correct answers out of 10 questions (then he freaks out about teaching preparation and leaves)
 
 ```{r}
+
 
 library(tidyverse)
 n_success <- 9
