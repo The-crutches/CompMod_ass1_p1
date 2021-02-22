@@ -252,3 +252,30 @@ Guidance Tips
 2. Last year's results are this year's expectations.
 3. Are the parameter estimates changing? (way 1)
 4. How does the new data look in last year's predictive posterior? (way 2)
+
+```{r}
+library(rethinking)
+
+dens <- 1000
+p_grid <- seq( from=0 , to=1 , length.out=1000 )
+prior <- rep(1, dens)
+
+likelihood <- dbinom( 3 , size=6 , prob=p_grid )
+posterior <- likelihood * prior
+posterior <- posterior / sum(posterior)
+samples <- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )
+
+samples
+HPDI(samples)
+
+
+w <- rbinom( 1e4 , size=10 , prob=samples )
+hist(w)
+
+library(tidyverse)
+w <- as.tibble(w)
+
+w_9 <- filter(w, value == 9)
+sum(w_9/10000)
+```
+
