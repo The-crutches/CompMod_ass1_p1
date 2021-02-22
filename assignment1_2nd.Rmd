@@ -456,6 +456,33 @@ rmse(new_K$likelihood, new_K$posterior)
 
 ```
 
+
+so, actually we need to get some predictive samples from the posterior. 
+```{r}
+library(rethinking)
+
+dens <- 1000
+p_grid <- seq( from=0 , to=1 , length.out=1000 )
+prior <- rep(1, dens)
+
+likelihood <- dbinom( 3 , size=6 , prob=p_grid )
+posterior <- likelihood * prior
+posterior <- posterior / sum(posterior)
+samples <- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )
+
+samples
+HPDI(samples)
+
+
+w <- rbinom( 1e4 , size=10 , prob=samples )
+hist(w)
+
+w <- as.tibble(w)
+
+
+#in the new data riccardo got 9 correct, which our model considers unlikely 
+```
+
 Guidance Tips
 
 1. There are at least two ways of assessing predictions.
